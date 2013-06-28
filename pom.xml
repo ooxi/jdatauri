@@ -70,7 +70,7 @@
 	<build>
 
 		<!--
-		 | Builderweiterungen
+		 | Build extensions
 		-->
 		<plugins>
 
@@ -88,9 +88,7 @@
 			</plugin>
 
 			<!--
-			 | Setze das Arbeitsverzeichnis waehrend der Ausfuehrung
-			 | von Tests unterhalb von target, damit Ausgaben von
-			 | Tests erhalten bleiben
+			 | Changing working directory during JUnit tests
 			-->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -122,6 +120,33 @@
 						</goals>
 					</execution>
 				</executions>
+			</plugin>
+			
+			<!--
+			 | Maven site plugin configuration
+			-->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-site-plugin</artifactId>
+				<version>3.3</version>
+
+				<configuration>
+					<reportPlugins>
+						<plugin>
+							<groupId>org.codehaus.mojo</groupId>
+							<artifactId>cobertura-maven-plugin</artifactId>
+							<version>2.5.1</version>
+
+							<configuration>
+								<formats>
+									<format>html</format>
+									<format>xml</format>
+								</formats>
+							</configuration>
+						</plugin>s
+					</reportPlugins>
+				</configuration>
+
 			</plugin>
 		</plugins>
 	</build>
