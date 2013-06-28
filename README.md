@@ -1,15 +1,16 @@
 'data' URI Parsing Rules
 ========================
 
-    Let URI be the string representing the data URI.
+ * Let URI be the string representing the data URI.
 
-    If URI does not start with a case-insensitive "data:":
-        Throw a MALFORMED_URI exception.
+ * If URI does not start with a case-insensitive "data:":
+    * Throw a MALFORMED_URI exception.
 
-    If URI does not contain a ",":
-        Throw a MALFORMED_URI exception.
-    Let supportedContentEncodings be an array of strings representing the supported content encodings. (["base64"] for example)
-    Let mimeType be a string with the value "text/plain".
+ * If URI does not contain a ",":
+    * Throw a MALFORMED_URI exception.
+
+ * Let supportedContentEncodings be an array of strings representing the supported content encodings. (["base64"] for example)
+ * Let mimeType be a string with the value "text/plain".
     Let contentEncoding be an empy string.
     Let contentEncodingAlreadySet be a boolean with a value of false.
     Let supportedValues be a map of string:string pairs where the first string in each pair represents the name of the supported value and the second string in each pair represents an empty string or default string value. (Example: {"charset" : "", "filename" : "", "content-disposition" : ""})
