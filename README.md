@@ -1,4 +1,4 @@
-jDataUri
+jDataUri [![Build Status](https://travis-ci.org/ooxi/jdatauri.png)](https://travis-ci.org/ooxi/jdatauri)
 ========
 
 jDataUri is a simple and well tested Java implementation for parsing data URIs,
