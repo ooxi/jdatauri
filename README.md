@@ -1,3 +1,52 @@
+jDataUri
+========
+
+jDataUri is a simple and well tested Java implementation for parsing data URIs,
+in a nearly self contained file (a Base64 decoder is needed).
+
+
+
+'data' URI Syntax
+=================
+
+`"data:" + valueList + "," + data`
+
+ * `"data:"` is case-insensitve.
+ * `valueList` is a `";"`-separated list of values. The first value is a
+   percent-encoded value representing the mime type. Although `"/"` and `"+"` in
+   the mime type can be percent-encoded as `"%2F"` and `"%2B"` repsepectively,
+   they are not required to be.
+ * For the rest of the values in `valueList`, if the value does not contain a
+   `"="`, then it is a content-encoding value (like `base64`). If the value does
+   contain a `"="`, then the value is a name=value pair where name and value are
+   percent-encoded representations of a name and value.
+ * valid names in a name=value pair are `"charset"`, `"filename"` and
+   `"content-disposition"`
+ * The mime type of the URI is the mime type value after percent-decoding it,
+   trimming leading and trailing white-space from it and converting it to
+   lowercase. If the value is then empty, the mime type for the URI is
+   `"text/plain"`.
+ * For content-encoding values, before determining the content encoding value,
+   it must be percent-decoded, stripped of leading and trailing white-space and
+   converted to lowercase. Further, the value is not used if its length is 0 and
+   when there are multiple content-encodings in the valueList, the first
+   non-empty (if any) one that has a supported value is used and the rest are
+   ignored. Supported values may differ between UAs. `"base64"` is usually the
+   only supported value at the moment.
+ * If a value is determined to be a name=value pair, the value must be split by
+   the first `"="`. The value on the left-side of the `"="` is the name and the
+   value on the right-side of the first `"="` is the value. Then, the name and
+   value must each be percent-decoded, stripped of leading and trailing
+   white-space and converted to lowercase. Further, if more than one value in
+   the valueList contains a name=value pair with the same name, the first one
+   with a non-empty value (if any) is used and the rest of the duplicates are
+   ignored.
+ * If a charset value is not found, then it defaults to `US-ASCII`.
+ * `data` is a percent-encoded value representing the file's data. To get the
+   data, it must be percent-decoded.
+
+
+
 'data' URI Parsing Rules
 ========================
 
@@ -62,44 +111,4 @@ This document was originally hosted at [shadow2531.com](http://shadow2531.com/op
     Let data be the result of percent-decoding data.
     Let dataURIObject be an object consisting of the mimeType, contentEncoding, data and supportedValues objects.
     return dataURIObject.
-
-
-'data' URI Syntax
-=================
-
-`"data:" + valueList + "," + data`
-
- * `"data:"` is case-insensitve.
- * `valueList` is a `";"`-separated list of values. The first value is a
-   percent-encoded value representing the mime type. Although `"/"` and `"+"` in
-   the mime type can be percent-encoded as `"%2F"` and `"%2B"` repsepectively,
-   they are not required to be.
- * For the rest of the values in `valueList`, if the value does not contain a
-   `"="`, then it is a content-encoding value (like `base64`). If the value does
-   contain a `"="`, then the value is a name=value pair where name and value are
-   percent-encoded representations of a name and value.
- * valid names in a name=value pair are `"charset"`, `"filename"` and
-   `"content-disposition"`
- * The mime type of the URI is the mime type value after percent-decoding it,
-   trimming leading and trailing white-space from it and converting it to
-   lowercase. If the value is then empty, the mime type for the URI is
-   `"text/plain"`.
- * For content-encoding values, before determining the content encoding value,
-   it must be percent-decoded, stripped of leading and trailing white-space and
-   converted to lowercase. Further, the value is not used if its length is 0 and
-   when there are multiple content-encodings in the valueList, the first
-   non-empty (if any) one that has a supported value is used and the rest are
-   ignored. Supported values may differ between UAs. `"base64"` is usually the
-   only supported value at the moment.
- * If a value is determined to be a name=value pair, the value must be split by
-   the first `"="`. The value on the left-side of the `"="` is the name and the
-   value on the right-side of the first `"="` is the value. Then, the name and
-   value must each be percent-decoded, stripped of leading and trailing
-   white-space and converted to lowercase. Further, if more than one value in
-   the valueList contains a name=value pair with the same name, the first one
-   with a non-empty value (if any) is used and the rest of the duplicates are
-   ignored.
- * If a charset value is not found, then it defaults to `US-ASCII`.
- * `data` is a percent-encoded value representing the file's data. To get the
-   data, it must be percent-decoded.
 
