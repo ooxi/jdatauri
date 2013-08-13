@@ -423,9 +423,13 @@ public class DataUri {
 	
 	
 	
+	/**
+	 * @warning URLDecoder.decode does not do percentDecoding, but instead decodes
+	 *     application/x-www-form-urlencoded therefore the .replace hack
+	 */
 	private static String percentDecode(String s, Charset cs) {
 		try {
-			return URLDecoder.decode(s, cs.name());
+			return URLDecoder.decode(s, cs.name()).replace(' ', '+');
 		} catch (UnsupportedEncodingException e) {
 			throw new IllegalStateException("Charset `"+ cs.name() +"' not supported", e);
 		}
