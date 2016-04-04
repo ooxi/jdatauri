@@ -201,5 +201,23 @@ public class DataUriTest {
 		Assert.assertEquals("inline", duri.getContentDisposition());
 		Assert.assertArrayEquals(new byte[] {71, 73, 70, 56, 57, 97, 1, 0, 1, 0, -128, 0, 0, -1, -1, -1, 0, 0, 0, 33, -7, 4, 1, 0, 0, 0, 0, 44, 0, 0, 0, 0, 1, 0, 1, 0, 0, 2, 2, 68, 1, 0, 59}, duri.getData());
 	}
-	
+
+
+
+	@Test
+	public void testToString() {
+		final String[] testStrings = {
+				"data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==",
+				"data:image/gif;charset=UTF-8;content-disposition=inline;filename=test.txt;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==",
+				"data:text/html;base64,dGVzdA==",
+				"data:text/html;charset=windows-1250;base64,dGVzdA==",
+				"data:text/html;filename=test.txt;base64,dGVzdA==",
+				"data:text/html;content-disposition=attachment;base64,dGVzdA==",
+				"data:text/html;content-disposition=attachment;filename=t.txt;base64,dGVzdA=="
+		};
+
+		for (final String testString : testStrings) {
+			Assert.assertEquals(testString, DataUri.parse(testString, UTF_8).toString());
+		}
+	}
 }
