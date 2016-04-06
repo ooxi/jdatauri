@@ -35,9 +35,13 @@
 		<version>9</version>
 	</parent>
 
+	<!--
+	 | 1.0   - Initial release
+	 | 1.0.1 - Fixed build on Travis CI
+	-->
 	<groupId>com.github.ooxi</groupId>
 	<artifactId>jdatauri</artifactId>
-	<version>1.0</version>
+	<version>1.0.1</version>
 	<packaging>jar</packaging>
 
 	<name>jdatauri</name>
@@ -138,24 +142,6 @@
 					</execution>
 				</executions>
 			</plugin>
-			
-			<!--
-			 | Sign build artifacts
-			-->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-gpg-plugin</artifactId>
-				<version>1.6</version>
-				<executions>
-					<execution>
-						<id>sign-artifacts</id>
-						<phase>verify</phase>
-						<goals>
-							<goal>sign</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
 
 			<!--
 			 | JUnit code coverage Report
@@ -209,4 +195,41 @@
 		</plugins>
 	</build>
 
+
+
+
+
+	<!--
+	 | Default build should not sign artifacts in order to be executable on
+	 | Travis CI
+	-->
+	<profiles>
+		
+		<profile>
+			<id>sign</id>
+			
+			<build>
+				<plugins>
+					
+					<!--
+					 | Sign build artifacts
+					-->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<version>1.6</version>
+						<executions>
+							<execution>
+								<id>sign-artifacts</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>
