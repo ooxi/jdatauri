@@ -38,10 +38,12 @@
 	<!--
 	 | 1.0   - Initial release
 	 | 1.0.1 - Fixed build on Travis CI
+	 |
+	 | 1.1   - `toString' implementation by Michał Słomkowski
 	-->
 	<groupId>com.github.ooxi</groupId>
 	<artifactId>jdatauri</artifactId>
-	<version>1.0.1</version>
+	<version>1.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>jdatauri</name>

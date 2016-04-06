@@ -421,7 +421,27 @@ public class DataUri {
 		return dataURIObject;
 	}
 	
-	
+	@Override
+	public String toString() {
+		StringBuilder s = new StringBuilder();
+		s.append("data:").append(this.getMime()).append(";");
+
+		if (this.charset != null) {
+			s.append(CHARSET_OPTION_NAME + "=").append(this.charset.name()).append(";");
+		}
+
+		if (this.contentDisposition != null) {
+			s.append(CONTENT_DISPOSITION_OPTION_NAME + "=").append(this.contentDisposition).append(";");
+		}
+
+		if (this.filename != null) {
+			s.append(FILENAME_OPTION_NAME + "=").append(this.filename).append(";");
+		}
+
+		s.append("base64,").append(Base64.encodeBase64String(this.getData()));
+
+		return s.toString();
+	}
 	
 	/**
 	 * @warning URLDecoder.decode does not do percentDecoding, but instead decodes
