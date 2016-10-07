@@ -1,457 +1,258 @@
-/**
- * Copyright (c) 2013 ooxi
- *     https://github.com/ooxi/jdatauri
- * 
- * This software is provided 'as-is', without any express or implied warranty.
- * In no event will the authors be held liable for any damages arising from the
- * use of this software.
- * 
- * Permission is granted to anyone to use this software for any purpose,
- * including commercial applications, and to alter it and redistribute it
- * freely, subject to the following restrictions:
- * 
- *  1. The origin of this software must not be misrepresented; you must not
- *     claim that you wrote the original software. If you use this software in a
- *     product, an acknowledgment in the product documentation would be
- *     appreciated but is not required.
- * 
- *  2. Altered source versions must be plainly marked as such, and must not be
- *     misrepresented as being the original software.
- * 
- *  3. This notice may not be removed or altered from any source distribution.
+/*
+  Copyright (c) 2013 ooxi
+      https://github.com/ooxi/jdatauri
+
+  This software is provided 'as-is', without any express or implied warranty.
+  In no event will the authors be held liable for any damages arising from the
+  use of this software.
+
+  Permission is granted to anyone to use this software for any purpose,
+  including commercial applications, and to alter it and redistribute it
+  freely, subject to the following restrictions:
+
+   1. The origin of this software must not be misrepresented; you must not
+      claim that you wrote the original software. If you use this software in a
+      product, an acknowledgment in the product documentation would be
+      appreciated but is not required.
+
+   2. Altered source versions must be plainly marked as such, and must not be
+      misrepresented as being the original software.
+
+   3. This notice may not be removed or altered from any source distribution.
  */
 package com.github.ooxi.jdatauri;
 
+import org.apache.commons.codec.binary.Base64;
+
 import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import org.apache.commons.codec.binary.Base64;
 
-/**
- * A data URI parser
- * 
- * @see https://tools.ietf.org/html/rfc2397
- * @see http://shadow2531.com/opera/testcases/datauri/data_uri_rules.html
- * @see https://en.wikipedia.org/wiki/Data_URI_scheme
- *
- * @author ooxi
- */
-public class DataUri {
-	
-	private static final String CHARSET_OPTION_NAME = "charset";
-	private static final String FILENAME_OPTION_NAME = "filename";
-	private static final String CONTENT_DISPOSITION_OPTION_NAME = "content-disposition";
+import static java.lang.String.format;
+import static java.net.URLDecoder.decode;
+import static java.util.Collections.singletonList;
 
-	private final String mime;
-	private final Charset charset;
-	private final String filename;
-	private final String contentDisposition;
-	private final byte[] data;
-	
-	
-	
-	public DataUri(String mime, Charset charset, byte[] data) {
-		this(mime, charset, null, null, data);
-	}
-	
-	public DataUri(String mime, Charset charset, String filename, String contentDisposition, byte[] data) {
-		this.mime = mime;
-		this.charset = charset;
-		this.filename = filename;
-		this.contentDisposition = contentDisposition;
-		this.data = data;
-		
-		if (null == mime) {
-			throw new NullPointerException("`mime' must not be null");
-		}
-		if (null == data) {
-			throw new NullPointerException("`data' must not be null");
-		}
-	}
+class DataUri {
+    static final String CHARSET_OPTION_NAME = "charset";
+    static final String FILENAME_OPTION_NAME = "filename";
+    static final String CONTENT_DISPOSITION_OPTION_NAME = "content-disposition";
 
-	
-	
-	public String getMime() {
-		return mime;
-	}
+    private final String mime;
+    private final Charset charset;
+    private final String filename;
+    private final String contentDisposition;
+    private final byte[] data;
+    private DataUriSerializerImpl dataUriFormatter = new DataUriSerializerImpl();
 
-	/**
-	 * @warning May be null
-	 */
-	public Charset getCharset() {
-		return charset;
-	}
-	
-	/**
-	 * @warning May be null
-	 */
-	public String getFilename() {
-		return filename;
-	}
-	
-	/**
-	 * @warning May be null
-	 */
-	public String getContentDisposition() {
-		return contentDisposition;
-	}
+    DataUri(String mime, Charset charset, byte[] data) {
+        this(mime, charset, null, null, data);
+    }
 
-	public byte[] getData() {
-		return data;
-	}
-	
-	
+    DataUri(String mime, Charset charset, String filename, String contentDisposition, byte[] data) {
+        this.mime = mime;
+        this.charset = charset;
+        this.filename = filename;
+        this.contentDisposition = contentDisposition;
+        this.data = data;
 
-	@Override
-	public int hashCode() {
-		int hash = 3;
-		hash = 23 * hash + (this.mime != null ? this.mime.hashCode() : 0);
-		hash = 23 * hash + (this.charset != null ? this.charset.hashCode() : 0);
-		hash = 23 * hash + (this.filename != null ? this.filename.hashCode() : 0);
-		hash = 23 * hash + (this.contentDisposition != null ? this.contentDisposition.hashCode() : 0);
-		hash = 23 * hash + Arrays.hashCode(this.data);
-		return hash;
-	}
+        if (null == mime) {
+            throw new IllegalArgumentException("`mime' must not be null");
+        }
+        if (null == data) {
+            throw new IllegalArgumentException("`data' must not be null");
+        }
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		final DataUri other = (DataUri) obj;
-		if ((this.mime == null) ? (other.mime != null) : !this.mime.equals(other.mime)) {
-			return false;
-		}
-		if (this.charset != other.charset && (this.charset == null || !this.charset.equals(other.charset))) {
-			return false;
-		}
-		if ((this.filename == null) ? (other.filename != null) : !this.filename.equals(other.filename)) {
-			return false;
-		}
-		if ((this.contentDisposition == null) ? (other.contentDisposition != null) : !this.contentDisposition.equals(other.contentDisposition)) {
-			return false;
-		}
-		if (!Arrays.equals(this.data, other.data)) {
-			return false;
-		}
-		return true;
-	}
-	
-	
-	
-	/**
-	 * Tries to parse a data URI described in RFC2397
-	 * 
-	 * @param uri A string representing the data URI
-	 * @param charset Charset to use when decoding percent encoded options
-	 *     like filename
-	 * 
-	 * @return Parsed data URI
-	 * @throws IllegalArgumentException iff an error occured during parse
-	 *     process
-	 */
-	public static DataUri parse(String uri, Charset charset) {
+    @SuppressWarnings("WeakerAccess")
+    public static DataUri parse(String uri, Charset charset) {
+        validateDataUri(uri);
 
-		/* If URI does not start with a case-insensitive "data:":
-		 * Throw a MALFORMED_URI exception.
-		 */
-		if (!uri.toLowerCase().startsWith("data:")) {
-			throw new IllegalArgumentException("URI must start with a case-insensitive `data:'");
-		}
+        Collection<String> supportedContentEncodings = singletonList("base64");
 
-		/* If URI does not contain a ",":
-		 * Throw a MALFORMED_URI exception.
-		 */
-		if (-1 == uri.indexOf(',')) {
-			throw new IllegalArgumentException("URI must contain a `,'");
-		}
-		
-		/* Let supportedContentEncodings be an array of strings
-		 * representing the supported content encodings. (["base64"] for
-		 * example)
-		 */
-		Collection<String> supportedContentEncodings = Arrays.asList(
-			"base64"
-		);
-		
-		/* Let mimeType be a string with the value "text/plain".
-		 */
-		String mimeType = "text/plain";
-		
-		/* Let contentEncoding be an empy string.
-		 */
-		String contentEncoding = "";
-		
-		/* Let contentEncodingAlreadySet be a boolean with a value of
-		 * false.
-		 */
-		boolean contentEncodingAlreadySet = false;
-		
-		/* Let supportedValues be a map of string:string pairs where the
-		 * first string in each pair represents the name of the
-		 * supported value and the second string in each pair represents
-		 * an empty string or default string value. (Example: {"charset"
-		 * : "", "filename" : "", "content-disposition" : ""})
-		 */
-		final Map<String, String> supportedValues = new HashMap<String, String>() {{
-			put(CHARSET_OPTION_NAME, "");
-			put(FILENAME_OPTION_NAME, "");
-			put(CONTENT_DISPOSITION_OPTION_NAME, "");
-		}};
-		
-		/* Let supportedValueSetBits be a map of string:bool pairs
-		 * representing each of the names in supportedValues with each
-		 * name set to false.
-		 */
-		final Map<String, Boolean> supportedValueSetBits = new HashMap<String, Boolean>() {{
-			for (String key : supportedValues.keySet()) {
-				put(key, false);
-			}
-		}};
-		
-		/* Let comma be the position of the first "," found in URI.
-		 */
-		int comma = uri.indexOf(',');
-		
-		/* Let temp be the substring of URI from, and including,
-		 * position 5 to, and excluding, the comma position. (between
-		 * "data:" and first ",")
-		 */
-		String temp = uri.substring("data:".length(), comma);
-		
-		/* Let headers be an array of strings returned by splitting temp
-		 * by ";".
-		 */
-		String[] headers = temp.split(";");
+        String mimeType = "text/plain";
+        String contentEncoding = "";
 
-		/* For each string s in headers:
-		 */
-		for (int header = 0; header < headers.length; ++header) {
-			String s = headers[header];
+        boolean contentEncodingAlreadySet = false;
+        final Map<String, String> supportedValues = new HashMap<String, String>() {{
+            put(CHARSET_OPTION_NAME, "");
+            put(FILENAME_OPTION_NAME, "");
+            put(CONTENT_DISPOSITION_OPTION_NAME, "");
+        }};
 
-			/* Let s equal the lowercase version of s
-			 */
-			s = s.toLowerCase();
-			
-			/* Let eq be the position result of searching for "=" in
-			 * s.
-			 */
-			int eq = s.indexOf('=');
-			
-			/* Let name and value be empty strings.
-			 */
-			String name;
-			String value = "";
+        final Map<String, Boolean> supportedValueSetBits = new HashMap<String, Boolean>() {{
+            for (String key : supportedValues.keySet()) {
+                put(key, false);
+            }
+        }};
 
-			/* If eq is not a valid position in s:
-			 */
-			if (-1 == eq) {
+        int comma = uri.indexOf(',');
+        String temp = uri.substring("data:".length(), comma);
+        String[] headers = temp.split(";");
 
-				/* Let name equal the result of percent-decoding
-				 * s.
-				 */
-				name = percentDecode(s, charset);
+        for (int header = 0; header < headers.length; ++header) {
+            String s = headers[header].toLowerCase();
 
-				/* Let name equal the result of trimming leading
-				 * and trailing white-space from name.
-				 */
-				name = name.trim();
-				
-			/* Else:
-			 */
-			} else {
-				
-				/* Let name equal the substring of s from
-				 * position 0 to, but not including, position
-				 * eq.
-				 */
-				name = s.substring(0, eq);
-				
-				/* Let name equal the result of percent-decoding
-				 * name.
-				 */
-				name = percentDecode(name, charset);
-				
-				/* Let name equal the result of trimmnig leading
-				 * and trailing white-space from name.
-				 */
-				name = name.trim();
-				
-				/* Let value equal the substring of s from
-				 * position eq + 1 to the end of s.
-				 */
-				value = s.substring(eq + 1);
-				
-				/* Let value equal the result of precent-
-				 * decoding value.
-				 */
-				value = percentDecode(value, charset);
-				
-				/* Let value equal the result of trimming
-				 * leading and trailing white-space from value.
-				 */
-				value = value.trim();
-			}
-			
-			/* If s is the first element in headers and eq is not a
-			 * valid position in s and the length of name is greater
-			 * than 0:
-			 */
-			if ((0 == header) && (-1 == eq) && !name.isEmpty()) {
-				
-				/* Let mimeType equal name.
-				 */
-				mimeType = name;
-			
-			/* Else:
-			 */
-			} else {
+            String name, value;
+            if (!s.contains("=")) {
+                name = percentDecode(s, charset);
+                value = "";
+            } else {
+                name = percentDecode(s.substring(0, s.indexOf('=')), charset);
+                value = percentDecode(s.substring(s.indexOf('=') + 1), charset);
+            }
 
-				/* If eq is not a valid position in s:
-				 */
-				if (-1 == eq) {
+            name = name.trim();
+            value = value.trim();
 
-					/* If name is found case-insensitively
-					 * in supportedContentEncodings:
-					 */
-					final String nameCaseInsensitive = name.toLowerCase();
-					
-					if (supportedContentEncodings.contains(nameCaseInsensitive)) {
+            if ((0 == header) && (-1 == s.indexOf('=')) && !name.isEmpty()) {
+                mimeType = name;
+            } else {
+                if (-1 == s.indexOf('=')) {
+                    final String nameCaseInsensitive = name.toLowerCase();
 
-						/* If contentEncodingAlreadySet
-						 * is false:
-						 */
-						if (!contentEncodingAlreadySet) {
+                    if (supportedContentEncodings.contains(nameCaseInsensitive)) {
+                        if (!contentEncodingAlreadySet) {
+                            contentEncoding = name;
+                            contentEncodingAlreadySet = true;
+                        }
+                    }
+                } else {
+                    final String nameCaseInsensitive = name.toLowerCase();
 
-							/* Let contentEncoding
-							 * equal name.
-							 */
-							contentEncoding = name;
-							
-							/* Let contentEncodingAlreadySet
-							 * equal true.
-							 */
-							contentEncodingAlreadySet = true;
-						}
-					}
+                    if (!value.isEmpty() && supportedValues.containsKey(nameCaseInsensitive)) {
+                        boolean valueSet = supportedValueSetBits.get(nameCaseInsensitive);
 
-				/* Else:
-				 */
-				} else {
+                        if (!valueSet) {
+                            supportedValues.put(nameCaseInsensitive, value);
+                            supportedValueSetBits.put(nameCaseInsensitive, true);
+                        }
+                    }
+                }
+            }
 
-					/* If the length of value is greater
-					 * than 0 and name is found case-
-					 * insensitively in supportedValues:
-					 */
-					final String nameCaseInsensitive = name.toLowerCase();
-					
-					if (!value.isEmpty() && supportedValues.containsKey(nameCaseInsensitive)) {
+        }
 
-						/* If the corresponding value
-						 * for name found (case-
-						 * insensitivley) in
-						 * supportedValueSetBits is
-						 * false:
-						 */
-						boolean valueSet = supportedValueSetBits.get(nameCaseInsensitive);
-						
-						if (!valueSet) {
-							
-							/* Let the corresponding
-							 * value for name found
-							 * (case-insensitively)
-							 * in supportedValues
-							 * equal value.
-							 */
-							supportedValues.put(nameCaseInsensitive, value);
-							
-							/* Let the corresponding
-							 * value for name found
-							 * (case-insensitively)
-							 * in supportedValueSetBits
-							 * equal true.
-							 */
-							supportedValueSetBits.put(nameCaseInsensitive, true);
-						}
-					}
-				}
-			}
+        String data = percentDecode(uri.substring(comma + 1), charset);
 
-		}
-		
-		/* Let data be the substring of URI from position comma + 1 to
-		 * the end of URI.
-		 */
-		String data = uri.substring(comma + 1);
-		
-		/* Let data be the result of percent-decoding data.
-		 */
-		data = percentDecode(data, charset);
-		
-		/* Let dataURIObject be an object consisting of the mimeType,
-		 * contentEncoding, data and supportedValues objects.
-		 */
-		final String finalMimeType = mimeType;
-		final Charset finalCharset = supportedValues.get(CHARSET_OPTION_NAME).isEmpty()
-			? null : Charset.forName(supportedValues.get(CHARSET_OPTION_NAME));
-		final String finalFilename = supportedValues.get(FILENAME_OPTION_NAME).isEmpty()
-			? null : supportedValues.get(FILENAME_OPTION_NAME);
-		final String finalContentDisposition = supportedValues.get(CONTENT_DISPOSITION_OPTION_NAME).isEmpty()
-			? null : supportedValues.get(CONTENT_DISPOSITION_OPTION_NAME);
-		final byte[] finalData = "base64".equalsIgnoreCase(contentEncoding)
-			? Base64.decodeBase64(data) : data.getBytes(charset);
-		
-		DataUri dataURIObject = new DataUri(
-			finalMimeType,
-			finalCharset,
-			finalFilename,
-			finalContentDisposition,
-			finalData
-		);
-		
-		/* return dataURIObject.
-		 */
-		return dataURIObject;
-	}
-	
-	@Override
-	public String toString() {
-		StringBuilder s = new StringBuilder();
-		s.append("data:").append(this.getMime()).append(";");
+        final String finalMimeType = mimeType;
+        final Charset finalCharset = supportedValues.get(CHARSET_OPTION_NAME).equals("")
+                ? null : Charset.forName(supportedValues.get(CHARSET_OPTION_NAME));
+        final String finalFilename = supportedValues.get(FILENAME_OPTION_NAME).equals("")
+                ? null : supportedValues.get(FILENAME_OPTION_NAME);
+        final String finalContentDisposition = supportedValues.get(CONTENT_DISPOSITION_OPTION_NAME).equals("")
+                ? null : supportedValues.get(CONTENT_DISPOSITION_OPTION_NAME);
+        final byte[] finalData = "base64".equalsIgnoreCase(contentEncoding)
+                ? Base64.decodeBase64(data) : data.getBytes(charset);
 
-		if (this.charset != null) {
-			s.append(CHARSET_OPTION_NAME + "=").append(this.charset.name()).append(";");
-		}
+        return new DataUri(
+                finalMimeType,
+                finalCharset,
+                finalFilename,
+                finalContentDisposition,
+                finalData
+        );
+    }
 
-		if (this.contentDisposition != null) {
-			s.append(CONTENT_DISPOSITION_OPTION_NAME + "=").append(this.contentDisposition).append(";");
-		}
+    private static void validateDataUri(String uri) {
+        if (!uri.toLowerCase().startsWith("data:")) {
+            throw new IllegalArgumentException("URI must start with a case-insensitive `data:'");
+        }
 
-		if (this.filename != null) {
-			s.append(FILENAME_OPTION_NAME + "=").append(this.filename).append(";");
-		}
+        if (!uri.contains(",")) {
+            throw new IllegalArgumentException("URI must contain a `,'");
+        }
+    }
 
-		s.append("base64,").append(Base64.encodeBase64String(this.getData()));
+    private static String percentDecode(String s, Charset cs) {
+        try {
+            return decode(s, cs.name()).replace(' ', '+');
+        } catch (UnsupportedEncodingException e) {
+            throw new IllegalStateException(format("Charset `%s' not supported", cs.name()), e);
+        }
+    }
 
-		return s.toString();
-	}
-	
-	/**
-	 * @warning URLDecoder.decode does not do percentDecoding, but instead decodes
-	 *     application/x-www-form-urlencoded therefore the .replace hack
-	 */
-	private static String percentDecode(String s, Charset cs) {
-		try {
-			return URLDecoder.decode(s, cs.name()).replace(' ', '+');
-		} catch (UnsupportedEncodingException e) {
-			throw new IllegalStateException("Charset `"+ cs.name() +"' not supported", e);
-		}
-	}
+    public String getMime() {
+        return mime;
+    }
+
+    public Charset getCharset() {
+        return charset;
+    }
+
+    public String getFilename() {
+        return filename;
+    }
+
+    public byte[] getData() {
+        return data;
+    }
+
+    public String getContentDisposition() {
+        return contentDisposition;
+    }
+
+    public String toString() {
+        return dataUriFormatter.serialize(this);
+    }
+
+    void setDataUriFormatter(DataUriSerializerImpl dataUriFormatter) {
+        this.dataUriFormatter = dataUriFormatter;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 23 * hash + getHashCodeOrDefault(this.mime, 0);
+        hash = 23 * hash + getHashCodeOrDefault(this.charset, 0);
+        hash = 23 * hash + getHashCodeOrDefault(this.filename, 0);
+        hash = 23 * hash + getHashCodeOrDefault(this.contentDisposition, 0);
+        hash = 23 * hash + Arrays.hashCode(this.data);
+        return hash;
+    }
+
+    private int getHashCodeOrDefault(Object subject, int defaultValue) {
+        return subject != null ? subject.hashCode() : defaultValue;
+    }
+
+    public boolean equals(Object other) {
+        return equals((DataUri) other);
+    }
+
+    public boolean equals(DataUri other) {
+        return other != null
+                && getClass() == other.getClass()
+                && !isMimeDifferent(other)
+                && !isCharsetDifferent(other)
+                && !isFilenameDifferent(other)
+                && !isContentDispositionDifferent(other)
+                && Arrays.equals(data, other.data);
+    }
+
+    private boolean isContentDispositionDifferent(DataUri other) {
+        return contentDisposition == null
+                ? other.contentDisposition != null
+                : !contentDisposition.equals(other.contentDisposition);
+    }
+
+    private boolean isFilenameDifferent(DataUri other) {
+        return filename == null
+                ? (other.filename != null)
+                : !filename.equals(other.filename);
+    }
+
+    private boolean isCharsetDifferent(DataUri other) {
+        return !(charset == other.charset
+                || charset != null
+                && charset.equals(other.charset)
+        );
+    }
+
+    private boolean isMimeDifferent(DataUri other) {
+        return mime == null
+                || other.mime == null
+                || !mime.equals(other.mime);
+    }
 }
