@@ -220,4 +220,16 @@ public class DataUriTest {
 			Assert.assertEquals(testString, DataUri.parse(testString, UTF_8).toString());
 		}
 	}
+
+	@Test
+	public void testPlusCharacter() {
+		// spaces shouldn't turn into pluses (see https://github.com/ooxi/jdatauri/issues/10)
+		DataUri duri = DataUri.parse("data:text/plain;charset=utf-8,Hello%2C%20how%20do%20you%20do%3F", UTF_8);
+		Assert.assertEquals("Hello, how do you do?", new String(duri.getData(), duri.getCharset()));
+
+		// plus in a mime type isn't decoded to space; pluses and spaces in data are decoded correctly.
+		duri = DataUri.parse("data:application/atom+xml;charset=utf-8,%3Ca%3E1%2B1%3D2%20isn%27t%20it%3F%3C%2Fa%3E", UTF_8);
+		Assert.assertEquals("<a>1+1=2 isn't it?</a>", new String(duri.getData(), duri.getCharset()));
+		Assert.assertEquals("application/atom+xml", duri.getMime());
+	}
 }
