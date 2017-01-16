@@ -29,6 +29,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
+
 import org.apache.commons.codec.binary.Base64;
 
 /**
@@ -442,14 +444,18 @@ public class DataUri {
 
 		return s.toString();
 	}
-	
-	/**
-	 * @warning URLDecoder.decode does not do percentDecoding, but instead decodes
-	 *     application/x-www-form-urlencoded therefore the .replace hack
-	 */
+
+	private static final Pattern PLUS = Pattern.compile("+", Pattern.LITERAL);
+
 	private static String percentDecode(String s, Charset cs) {
 		try {
-			return URLDecoder.decode(s, cs.name()).replace(' ', '+');
+			// We only need to decode %hh escape sequences, while
+			// URLDecoder.decode in addition to that also replaces '+' with space.
+			// As a workaround we first replace all pluses with %2B sequence,
+			// so that they are preserved after decoding.
+			s = PLUS.matcher(s).replaceAll("%2B");
+
+			return URLDecoder.decode(s, cs.name());
 		} catch (UnsupportedEncodingException e) {
 			throw new IllegalStateException("Charset `"+ cs.name() +"' not supported", e);
 		}
