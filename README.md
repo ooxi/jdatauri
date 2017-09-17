@@ -4,7 +4,7 @@ jDataUri [![Build Status](https://travis-ci.org/ooxi/jdatauri.png)](https://trav
 jDataUri is a simple and well tested Java implementation for parsing data URIs,
 in a nearly self contained file (a Base64 decoder is needed).
 
-
+jDataUri is licensed under the [zlib/libpng License](https://opensource.org/licenses/Zlib)
 
 'data' URI Syntax
 =================
