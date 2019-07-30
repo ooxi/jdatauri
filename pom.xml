@@ -40,7 +40,8 @@
 	 | 1.0.1 - Fixed build on Travis CI
 	 |
 	 | 1.1   - `toString' implementation by Michał Słomkowski
-	 | 1.2   - fix handling of '+' character during percentDecode by Anton Vodonosov
+	 | 1.2   - fix handling of '+' character during percentDecode by Anton
+	 |         Vodonosov
 	-->
 	<groupId>com.github.ooxi</groupId>
 	<artifactId>jdatauri</artifactId>
