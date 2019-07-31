@@ -56,8 +56,6 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
-
-
 	<dependencies>
 
 		<!--
@@ -202,12 +200,25 @@
 		</plugins>
 	</reporting>
 
-	<!--
-	 | Default build should not sign artifacts in order to be executable on
-	 | Travis CI
-	-->
 	<profiles>
 
+		<!--
+		 | Profile for building with JDK 8 (and above) which turns off doclint
+		-->
+		<profile>
+			<id>JDK 8 Build</id>
+			<activation>
+				<jdk>[1.8,)</jdk>
+			</activation>
+			<properties>
+				<additionalparam>-Xdoclint:none</additionalparam>
+			</properties>
+		</profile>
+
+		<!--
+		 | Default build should not sign artifacts in order to be executable on
+		 | Travis CI
+		-->
 		<profile>
 			<id>sign</id>
 
