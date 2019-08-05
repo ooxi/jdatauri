@@ -3,30 +3,30 @@
 <!--
  | Copyright (c) 2013 ooxi
  |     https://github.com/ooxi/jdatauri
- | 
+ |
  | This software is provided 'as-is', without any express or implied warranty.
  | In no event will the authors be held liable for any damages arising from the
  | use of this software.
- | 
+ |
  | Permission is granted to anyone to use this software for any purpose,
  | including commercial applications, and to alter it and redistribute it
  | freely, subject to the following restrictions:
- | 
+ |
  |  1. The origin of this software must not be misrepresented; you must not
  |     claim that you wrote the original software. If you use this software in a
  |     product, an acknowledgment in the product documentation would be
  |     appreciated but is not required.
- | 
+ |
  |  2. Altered source versions must be plainly marked as such, and must not be
  |     misrepresented as being the original software.
- | 
+ |
  |  3. This notice may not be removed or altered from any source distribution.
 -->
 
 <project	xmlns="http://maven.apache.org/POM/4.0.0"
 		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	
+
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
@@ -59,7 +59,7 @@
 
 
 	<dependencies>
-		
+
 		<!--
 		 | Base64 content encoding
 		-->
@@ -68,7 +68,7 @@
 			<artifactId>commons-codec</artifactId>
 			<version>1.10</version>
 		</dependency>
-		
+
 		<!--
 		 | Test environment
 		-->
@@ -113,7 +113,7 @@
 					<workingDirectory>${project.build.directory}/sunfire-working-directory</workingDirectory>
 				</configuration>
 			</plugin>
-			
+
 			<!--
 			 | Create source artifact
 			-->
@@ -130,7 +130,7 @@
 					</execution>
 				</executions>
 			</plugin>
-			
+
 			<!--
 			 | Create javadoc artifact
 			-->
@@ -170,7 +170,7 @@
 					</execution>
 				</executions>
 			</plugin>
-			
+
 			<!--
 			 | Maven site plugin configuration
 			-->
@@ -209,13 +209,13 @@
 	 | Travis CI
 	-->
 	<profiles>
-		
+
 		<profile>
 			<id>sign</id>
-			
+
 			<build>
 				<plugins>
-					
+
 					<!--
 					 | Sign build artifacts
 					-->
