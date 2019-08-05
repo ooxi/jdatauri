@@ -7,3 +7,6 @@ jdk:
  - openjdk8
  - openjdk7
 
+script:
+ - mvn site:site
+

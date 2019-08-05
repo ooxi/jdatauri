@@ -40,9 +40,12 @@
 	 | 1.0.1 - Fixed build on Travis CI
 	 |
 	 | 1.1   - `toString' implementation by Michał Słomkowski
-	 | 1.2   - fix handling of '+' character during percentDecode by Anton
+	 |
+	 | 1.2   - Fix handling of '+' character during percentDecode by Anton
 	 |         Vodonosov
-	 | 1.3   - ???
+	 |
+	 | 1.3   - Fix Maven reporting configuration issue by Chris Camel 
+	 |       - ???
 	-->
 	<groupId>com.github.ooxi</groupId>
 	<artifactId>jdatauri</artifactId>
@@ -177,7 +180,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-site-plugin</artifactId>
-				<version>3.4</version>
+				<version>3.7.1</version>
 			</plugin>
 		</plugins>
 	</build>
@@ -185,7 +188,7 @@
 	<!--
  	 | Maven site plugin configuration
 	-->
-    <reporting>
+	<reporting>
 		<plugins>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
