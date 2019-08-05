@@ -1,11 +1,11 @@
 <?xml version="1.0"?>
 <!DOCTYPE coverage SYSTEM "http://cobertura.sourceforge.net/xml/coverage-04.dtd">
 
-<coverage line-rate="0.9338842975206612" branch-rate="0.6428571428571429" lines-covered="113" lines-valid="121" branches-covered="54" branches-valid="84" complexity="5.416666666666667" version="2.0.3" timestamp="1564493556103">
+<coverage line-rate="0.9338842975206612" branch-rate="0.6428571428571429" lines-covered="113" lines-valid="121" branches-covered="54" branches-valid="84" complexity="5.416666666666667" version="2.0.3" timestamp="1565044840370">
 	<sources>
+		<source>/tmp/jdatauri/target/generated-sources/annotations</source>
 		<source>--source</source>
-		<source>/home/vk/code/java/jdatauri/src/main/java</source>
-		<source>/home/vk/code/java/jdatauri/target/generated-sources/annotations</source>
+		<source>/tmp/jdatauri/src/main/java</source>
 	</sources>
 	<packages>
 		<package name="com.github.ooxi.jdatauri" line-rate="0.9338842975206612" branch-rate="0.6428571428571429" complexity="5.416666666666667">
