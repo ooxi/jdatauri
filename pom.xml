@@ -41,10 +41,11 @@
 	 |
 	 | 1.1   - `toString' implementation by Michał Słomkowski
 	 |
-	 | 1.2   - Fix handling of '+' character during percentDecode by Anton
-	 |         Vodonosov
+	 | 1.2   - Fix handling of '+' character during percentDecode (by Anton
+	 |         Vodonosov)
 	 |
-	 | 1.3   - Fix Maven reporting configuration issue by Chris Camel 
+	 | 1.3   - Fix Maven reporting configuration issue (by Chris Camel)
+	 |       - Turning off doclint hofixes issue #6 (by Chris Camel)
 	 |       - ???
 	-->
 	<groupId>com.github.ooxi</groupId>
@@ -206,7 +207,11 @@
 	<profiles>
 
 		<!--
-		 | Profile for building with JDK 8 (and above) which turns off doclint
+		 | Profile for building with JDK 8 (and above) which turns off
+		 | doclint
+		 |
+		 | @warning Hotfixes issue #6, should be fixed by correcting the
+		 |     javadoc
 		-->
 		<profile>
 			<id>JDK 8 Build</id>
@@ -219,8 +224,8 @@
 		</profile>
 
 		<!--
-		 | Default build should not sign artifacts in order to be executable on
-		 | Travis CI
+		 | Default build should not sign artifacts in order to be
+		 | executable on Travis CI
 		-->
 		<profile>
 			<id>sign</id>

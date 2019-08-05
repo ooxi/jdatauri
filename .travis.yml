@@ -8,5 +8,6 @@ jdk:
  - openjdk7
 
 script:
+ - mvn clean install
  - mvn site:site
 
