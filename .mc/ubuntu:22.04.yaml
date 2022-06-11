@@ -1,0 +1,6 @@
+---
+base: ubuntu:22.04
+install:
+ - maven
+ - openjdk-17-jdk
+---
