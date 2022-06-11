@@ -1,0 +1,11 @@
+---
+base: ubuntu:18.04
+install:
+ - openjdk-8-jdk
+---
+#!/bin/bash
+
+# Must be installed separatly in order to not pull in java 11
+sudo apt-get -y update && sudo apt-get -y install	\
+	maven
+
